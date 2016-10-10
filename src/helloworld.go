@@ -19,7 +19,9 @@ func main() {
 	test.PutFloat(1.0)
 	floatValue := test.GetFloatFrom(6)
 	fmt.Printf("取出的Float为：%f\n", floatValue)
-
+	test.PutString("HelloWorld")
+	st := test.GetStringFrom(10)
+	fmt.Printf("取出的String为：%v\n", st)
 	fmt.Printf("%v", test)
 }
 

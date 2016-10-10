@@ -265,11 +265,12 @@ func (buff *SBuffer) GetLongFrom(pos int) int64 {
 
 //GetString
 func (buff *SBuffer) GetString() string {
-
-	return ""
+	length := buff.GetInt()
+	buff.position += int(length) + 4
+	return string(buff.buf[buff.position:buff.position+int(length)-1])
 }
 
 func (buff *SBuffer) GetStringFrom(pos int) string {
-
-	return ""
+	length := buff.GetIntFrom(pos)
+	return string(buff.buf[pos+4:pos+int(length)+4-1])
 }
