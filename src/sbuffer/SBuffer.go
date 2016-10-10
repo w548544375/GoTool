@@ -15,6 +15,7 @@ type SBuffer struct {
 func NewSBuffer() *SBuffer {
 	buff := new(SBuffer)
 	buff.cap = len(buff.buf)
+	buff.limit = buff.cap
 	return buff
 }
 
@@ -24,9 +25,9 @@ const (
 
 var ErrTooLarge = errors.New("SBuffer too large")
 
-//buff长度
+//buff剩余没有操作的长度
 func (buff *SBuffer) Len() int {
-	return len(buff.buf)
+	return buff.cap - buff.position
 }
 
 //
