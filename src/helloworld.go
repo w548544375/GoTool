@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-
 	test := SBuffer.NewSBuffer()
 	test.PutShort(0x0BBA)
 	sd := test.GetShortFrom(0)
