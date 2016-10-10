@@ -8,6 +8,7 @@ import (
 type SBuffer struct {
 	buf      []byte
 	position int //当前指向的位置
+	limit    int //位置
 	cap      int //buffer的容量
 }
 
@@ -42,6 +43,21 @@ func (buff *SBuffer) Pos() int {
 func (buff *SBuffer) Bytes() []byte {
 	return buff.buf
 }
+
+//为发送做准备
+func (buff *SBuffer) Flip() {
+	buff.limit = buff.position
+	buff.position = 0
+}
+
+//重置buff
+func (buff *SBuffer) Reset()  {
+	buff.position =0
+	buff.buf = make([]byte,64)
+	buff.cap = len(buff.buf)
+	buff.limit = buff.cap
+}
+
 
 //扩展buf
 func (buff *SBuffer) expand(length int) {
@@ -267,10 +283,10 @@ func (buff *SBuffer) GetLongFrom(pos int) int64 {
 func (buff *SBuffer) GetString() string {
 	length := buff.GetInt()
 	buff.position += int(length) + 4
-	return string(buff.buf[buff.position:buff.position+int(length)-1])
+	return string(buff.buf[buff.position:buff.position + int(length) - 1])
 }
 
 func (buff *SBuffer) GetStringFrom(pos int) string {
 	length := buff.GetIntFrom(pos)
-	return string(buff.buf[pos+4:pos+int(length)+4-1])
+	return string(buff.buf[pos + 4:pos + int(length) + 4 - 1])
 }
