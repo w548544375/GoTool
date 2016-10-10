@@ -10,11 +10,17 @@ import (
 func main() {
 
 	test := SBuffer.NewSBuffer()
-	test.PutByte(24)
 	test.PutShort(0x0BBA)
-	test.PutInt(0x140A)
+	sd := test.GetShortFrom(0)
+	fmt.Printf("取出的Short为：%04X\n", sd)
+	test.PutInt(1)
+	intval := test.GetIntFrom(2)
+	fmt.Printf("取出的Int为：%d\n", intval)
 	test.PutFloat(1.0)
-	fmt.Printf("%X",test)
+	floatValue := test.GetFloatFrom(6)
+	fmt.Printf("取出的Float为：%f\n", floatValue)
+
+	fmt.Printf("%v", test)
 }
 
 type MyBuff struct {
@@ -31,7 +37,7 @@ func (v *Vertex) Scale(f float64) {
 }
 
 func (v *Vertex) Abs() float64 {
-	return math.Sqrt(v.x*v.x + v.y*v.y)
+	return math.Sqrt(v.x * v.x + v.y * v.y)
 }
 
 type ErrNegativeSqrt float64
