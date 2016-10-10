@@ -1,6 +1,9 @@
 package SBuffer
 
-import "errors"
+import (
+	"errors"
+	"unsafe"
+)
 
 type SBuffer struct {
 	buf      []byte
@@ -19,6 +22,26 @@ const (
 )
 
 var ErrTooLarge = errors.New("SBuffer too large")
+
+//buff长度
+func (buff *SBuffer) Len() int{
+	return len(buff.buf)
+}
+
+//
+func (buff *SBuffer) Cap() int{
+	return buff.cap
+}
+
+//取得当前位置
+func (buff *SBuffer) Pos() int{
+	return buff.position
+}
+
+//取得buff
+func (buff *SBuffer) Bytes() []byte{
+	return buff.buf
+}
 
 //扩展buf
 func (buff *SBuffer) expand(length int) {
@@ -90,13 +113,24 @@ func (buff *SBuffer) PutIntTo(pos int, value int32) {
 }
 
 func (buff *SBuffer) PutFloat(value float32) {
-	temp := int32(value)
-	buff.PutInt(temp)
+	if buff.position == buff.cap || buff.position+4 > buff.cap {
+		buff.expand(DEFAULT_BUFF_LENGTH)
+	}
+	bits := *(*uint32)(unsafe.Pointer(&value))
+	for i:=0; i <4 ; i++ {
+		buff.buf[buff.position + i] = byte(bits >> uint32(i * 8))
+	}
+	buff.position += 4
 }
 
 func (buff *SBuffer) PutFloatTo(pos int, value float32) {
-	temp := int32(value)
-	buff.PutIntTo(pos, temp)
+	if buff.position+4 > buff.cap {
+		buff.expand(4)
+	}
+	bits := *(*uint32)(unsafe.Pointer(&value))
+	for i:=0; i <4 ; i++ {
+		buff.buf[pos + i] = byte(bits >> uint32(i * 8))
+	}
 }
 
 func (buff *SBuffer) PutLong(value int64) {

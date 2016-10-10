@@ -14,11 +14,7 @@ func main() {
 	test.PutShort(0x0BBA)
 	test.PutInt(0x140A)
 	test.PutFloat(1.0)
-	test.PutLong(85776868)
-	test.PutString("佛啊佛大佛杀佛见哦企鹅技巧哦见哦天辅导费激动啊就佛大家哦大家供电局阿公大家感动啊更激动啊激动感觉哦啊发激动啊发激动啊附近的")
-	buff := bytes.NewBufferString("wang")
-	fmt.Println(buff.Bytes())
-	fmt.Printf("%v", test)
+	fmt.Printf("%X",test)
 }
 
 type MyBuff struct {
