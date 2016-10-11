@@ -15,7 +15,7 @@ type SSocket struct {
 	net.TCPConn
 }
 
-func (socket *SSocket) Recv(buff []byte) {
+func (socket *SSocket) Recv(buff []byte) error {
 	defer socket.Close()
 	length := 0
 	for {
@@ -25,12 +25,12 @@ func (socket *SSocket) Recv(buff []byte) {
 		}
 		if err != nil {
 			if err != io.EOF {
-				return
+				return err
 			}
 			break
 		}
 	}
-
+	return nil
 }
 
 //接受数据 组装为message
@@ -48,17 +48,24 @@ func (socket *SSocket) RecvMessage() *SMessage.SMessage {
 		defer socket.Close()
 		return nil
 	}
-
-	msg.SetHead(18,headBuf)
+	msg.SetHead(18, headBuf)
 	if extraLength != 0 {
 		buff = make([]byte, extraLength)
-		socket.Recv(buff)
-		msg.SetExtra(extraLength,SBuffer.Wrap(buff))
+		err := socket.Recv(buff)
+		if err != nil {
+			defer socket.Close()
+			return nil
+		}
+		msg.SetExtra(extraLength, SBuffer.Wrap(buff))
 	}
 	if mainLength != 0 {
 		buff = make([]byte, mainLength)
-		socket.Recv(buff)
-		msg.SetMain(mainLength,SBuffer.Wrap(buff))
+		err := socket.Recv(buff)
+		if err != nil {
+			defer socket.Close()
+			return nil
+		}
+		msg.SetMain(mainLength, SBuffer.Wrap(buff))
 	}
 	return msg
 }
