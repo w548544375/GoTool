@@ -15,6 +15,18 @@ type SMessage struct {
 	mainLength  int
 }
 
+func (msg *SMessage) HeadLength() int{
+	return msg.headLength
+}
+
+func (msg *SMessage) ExtraLength() int{
+	return msg.extraLength
+}
+
+func (msg *SMessage) MainLength() int {
+	return msg.mainLength
+}
+
 //取得buff的head
 func (msg *SMessage) Head() []byte {
 	return msg.headData.Bytes()

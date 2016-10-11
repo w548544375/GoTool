@@ -40,6 +40,17 @@ func (buff *SBuffer) SetPos(newPos int) error{
 	return nil
 }
 
+
+func (buff *SBuffer) SetLimit(newLimit int){
+	buff.limit = newLimit
+}
+
+
+func (buff *SBuffer) Limit() int{
+	return buff.limit
+}
+
+
 //buff剩余没有操作的长度
 func (buff *SBuffer) Len() int {
 	return buff.cap - buff.position
@@ -75,7 +86,9 @@ func (buff *SBuffer) Reset()  {
 }
 
 
-//扩展buf
+/*
+*每次扩展都会设置buffer的limit为cap
+*/
 func (buff *SBuffer) expand(length int) {
 	defer func() {
 		if recover() != nil {
@@ -86,6 +99,7 @@ func (buff *SBuffer) expand(length int) {
 	newBuf := make([]byte, newCap)
 	newPos := copy(newBuf[:], buff.buf[:buff.position])
 	buff.cap = newCap
+	buff.limit = newCap
 	buff.buf = newBuf
 	buff.position = newPos
 }
