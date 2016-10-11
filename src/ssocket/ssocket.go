@@ -76,7 +76,6 @@ func (socket *SSocket) SendMessage(message *SMessage.SMessage) {
 	socket.SendBuffer(message.HeadLength(), message.Head())
 	socket.SendBuffer(message.ExtraLength(), message.Extra())
 	socket.SendBuffer(message.MainLength(), message.Main())
-
 }
 
 func (socket *SSocket) SendBuffer(sLen int, buffer SBuffer.SBuffer) {
