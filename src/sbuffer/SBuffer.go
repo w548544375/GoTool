@@ -25,6 +25,21 @@ const (
 
 var ErrTooLarge = errors.New("SBuffer too large")
 
+var ErrPosOverFlow = errors.New("设置的位置大于buff的容量")
+
+//将byte数组转换为SBuffer对象
+func Wrap(bytes []byte) *SBuffer{
+	return &SBuffer{bytes,0,len(bytes),len(bytes)}
+}
+
+func (buff *SBuffer) SetPos(newPos int) error{
+	if(newPos >= buff.cap){
+		return ErrPosOverFlow
+	}
+	buff.position = newPos
+	return nil
+}
+
 //buff剩余没有操作的长度
 func (buff *SBuffer) Len() int {
 	return buff.cap - buff.position
@@ -40,9 +55,9 @@ func (buff *SBuffer) Pos() int {
 	return buff.position
 }
 
-//取得buff
+//取得到limit的buff内容
 func (buff *SBuffer) Bytes() []byte {
-	return buff.buf
+	return buff.buf[:buff.limit]
 }
 
 //为发送做准备
