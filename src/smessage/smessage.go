@@ -2,10 +2,8 @@ package SMessage
 
 import (
 	"sbuffer"
-	"errors"
 )
 
-var ERR_PACKET_LENGTH = errors.New("错误的封包格式")
 
 //用于发送的消息结构体
 type SMessage struct {
