@@ -36,3 +36,7 @@ func (self *MessageList) Reset() {
 	defer self.guard.Unlock()
 	self.list = self.list[0:0]
 }
+
+func NewMessageList() *MessageList{
+	return nil
+}
