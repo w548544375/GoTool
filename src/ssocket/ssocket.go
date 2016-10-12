@@ -1,10 +1,10 @@
 package ssocket
 
 import (
-	"net"
-	"smessage"
 	"io"
+	"net"
 	"sbuffer"
+	"smessage"
 )
 
 const (
@@ -34,8 +34,8 @@ func (socket *SSocket) Recv(buff []byte) error {
 }
 
 //接受数据 组装为message
-func (socket *SSocket) RecvMessage() *SMessage.SMessage {
-	msg := new(SMessage.SMessage)
+func (socket *SSocket) RecvMessage() *smessage.SMessage {
+	msg := new(smessage.SMessage)
 	buff := make([]byte, DEFAULT_HEAD_LENGTH)
 	socket.Recv(buff)
 	//验证数据包
@@ -44,7 +44,7 @@ func (socket *SSocket) RecvMessage() *SMessage.SMessage {
 	extraLength := headBuf.GetShortFrom(2)
 	mainLength := headBuf.GetIntFrom(4)
 	validate := headBuf.GetShortFrom(16)
-	if msgType ^ extraLength ^ mainLength != validate {
+	if msgType^extraLength^mainLength != validate {
 		defer socket.Close()
 		return nil
 	}
@@ -70,9 +70,8 @@ func (socket *SSocket) RecvMessage() *SMessage.SMessage {
 	return msg
 }
 
-
 //发送封包
-func (socket *SSocket) SendMessage(message *SMessage.SMessage) {
+func (socket *SSocket) SendMessage(message *smessage.SMessage) {
 	socket.SendBuffer(message.HeadLength(), message.Head())
 	socket.SendBuffer(message.ExtraLength(), message.Extra())
 	socket.SendBuffer(message.MainLength(), message.Main())

@@ -1,17 +1,16 @@
-package SMessage
+package smessage
 
 import (
 	"sbuffer"
 )
 
-
 //用于发送的消息结构体
 type SMessage struct {
-	headData    SBuffer.SBuffer
+	headData    *SBuffer.SBuffer
 	headLength  int
-	extraData   SBuffer.SBuffer
+	extraData   *SBuffer.SBuffer
 	extraLength int
-	mainData    SBuffer.SBuffer
+	mainData    *SBuffer.SBuffer
 	mainLength  int
 }
 
@@ -43,24 +42,22 @@ func (msg *SMessage) Main() []byte {
 }
 
 func (msg *SMessage) SetHead(length int, head *SBuffer.SBuffer) {
-	if ( length > 0 && head.Limit() > 0 && head.Limit() == length ) {
+	if length > 0 && head.Limit() > 0 && head.Limit() == length {
 		msg.headData = head
 		msg.headLength = length
 	}
 }
 
 func (msg *SMessage) SetExtra(length int, extra *SBuffer.SBuffer) {
-	if ( length > 0 && extra.Limit() > 0 && extra.Limit() == length ) {
+	if length > 0 && extra.Limit() > 0 && extra.Limit() == length {
 		msg.extraData = extra
 		msg.extraLength = length
 	}
 }
 
-
 func (msg *SMessage) SetMain(length int, main *SBuffer.SBuffer) {
-	if ( length > 0 && main.Limit() > 0 && main.Limit() == length ) {
+	if length > 0 && main.Limit() > 0 && main.Limit() == length {
 		msg.mainData = main
 		msg.mainLength = length
 	}
 }
-
