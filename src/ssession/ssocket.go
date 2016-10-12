@@ -19,6 +19,11 @@ type SSocket struct {
 	conn net.Conn
 }
 
+func (self *SSocket) Close()  {
+	self.conn.Close()
+}
+
+
 func (socket *SSocket) Recv(buff []byte) (int,error) {
 	length := 0
 	for {
