@@ -7,9 +7,11 @@ import (
 
 type MessageList struct {
 	//
-	list []*SSession
+	list     []*SSession
 
-	guard sync.Mutex
+	guard    sync.Mutex
+
+	listCond *sync.Cond
 }
 
 //放入消息
@@ -17,6 +19,7 @@ func (self *MessageList) Push(msg *smessage.SMessage) {
 	self.guard.Lock()
 	defer self.guard.Unlock()
 	self.list = append(self.list, msg)
+	self.listCond.Signal()
 }
 
 //取消息
@@ -37,6 +40,8 @@ func (self *MessageList) Reset() {
 	self.list = self.list[0:0]
 }
 
-func NewMessageList() *MessageList{
-	return nil
+func NewMessageList() *MessageList {
+	self := &MessageList{}
+	self.listCond = sync.NewCond(&self.guard)
+	return self
 }
