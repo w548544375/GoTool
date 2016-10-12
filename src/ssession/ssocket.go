@@ -1,4 +1,4 @@
-package ssocket
+package ssession
 
 import (
 	"io"
@@ -16,13 +16,13 @@ var ERR_LENGTH_EXTRA = error.Error("Extra Packet Length mismatch")
 var ERR_LENGTH_MAIN = error.Error("Main Packet Length mismatch")
 
 type SSocket struct {
-	net.TCPConn
+	conn net.Conn
 }
 
 func (socket *SSocket) Recv(buff []byte) (int,error) {
 	length := 0
 	for {
-		n, err := socket.Read(buff[length:])
+		n, err := socket.conn.Read(buff[length:])
 		if n > 0 {
 			length += n
 		}
@@ -91,7 +91,7 @@ func (socket *SSocket) SendBuffer(sLen int, buffer SBuffer.SBuffer) bool {
 	if buffer.Limit() > 0 {
 		length := 0
 		for {
-			n, err := socket.Write(buffer.Bytes()[length:])
+			n, err := socket.conn.Write(buffer.Bytes()[length:])
 			if n > 0 {
 				length += n
 			}
@@ -106,4 +106,8 @@ func (socket *SSocket) SendBuffer(sLen int, buffer SBuffer.SBuffer) bool {
 		}
 	}
 	return false
+}
+
+func newSsocket(client net.Conn) *SSocket {
+	return &SSocket{conn:client}
 }
