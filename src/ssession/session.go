@@ -71,7 +71,7 @@ func (self *SSession) recvThread(evq SEventQueue) {
 }
 
 //新建session
-func newSession(socket SSocket, evq SEventQueue) *SSession {
+func NewSession(socket SSocket, evq SEventQueue) *SSession {
 	self := &SSession{
 		client:          socket,
 		needNotifyWrite: true,

@@ -19,7 +19,13 @@ func main() {
 	test.PutString("HelloWorld")
 	st := test.GetStringFrom(10)
 	fmt.Printf("取出的String为：%v\n", st)
-	fmt.Printf("%v", test)
+	fmt.Printf("%v\n", test)
+	test1 := Test()
+	fmt.Printf("%v", test1)
+
 }
 
-
+func Test() *SBuffer.SBuffer {
+	b := make([]byte, 64)
+	return SBuffer.Wrap(b)
+}
