@@ -41,14 +41,14 @@ func (msg *SMessage) Main() []byte {
 	return msg.mainData.Bytes()
 }
 
-func (msg *SMessage) SetHead(length int, head *SBuffer.SBuffer) {
+func (msg *SMessage) SetHead(length int16, head *SBuffer.SBuffer) {
 	if length > 0 && head.Limit() > 0 && head.Limit() == int(length) {
 		msg.headData = head
 		msg.headLength = length
 	}
 }
 
-func (msg *SMessage) SetExtra(length int, extra *SBuffer.SBuffer) {
+func (msg *SMessage) SetExtra(length int16, extra *SBuffer.SBuffer) {
 	if length > 0 && extra.Limit() > 0 && extra.Limit() == int(length) {
 		msg.extraData = extra
 		msg.extraLength = length
