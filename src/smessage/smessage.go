@@ -7,18 +7,18 @@ import (
 //用于发送的消息结构体
 type SMessage struct {
 	headData    *SBuffer.SBuffer
-	headLength  int
+	headLength  int16
 	extraData   *SBuffer.SBuffer
-	extraLength int
+	extraLength int16
 	mainData    *SBuffer.SBuffer
 	mainLength  int
 }
 
-func (msg *SMessage) HeadLength() int {
+func (msg *SMessage) HeadLength() int16 {
 	return msg.headLength
 }
 
-func (msg *SMessage) ExtraLength() int {
+func (msg *SMessage) ExtraLength() int16 {
 	return msg.extraLength
 }
 
@@ -42,14 +42,14 @@ func (msg *SMessage) Main() []byte {
 }
 
 func (msg *SMessage) SetHead(length int, head *SBuffer.SBuffer) {
-	if length > 0 && head.Limit() > 0 && head.Limit() == length {
+	if length > 0 && head.Limit() > 0 && head.Limit() == int(length) {
 		msg.headData = head
 		msg.headLength = length
 	}
 }
 
 func (msg *SMessage) SetExtra(length int, extra *SBuffer.SBuffer) {
-	if length > 0 && extra.Limit() > 0 && extra.Limit() == length {
+	if length > 0 && extra.Limit() > 0 && extra.Limit() == int(length) {
 		msg.extraData = extra
 		msg.extraLength = length
 	}
