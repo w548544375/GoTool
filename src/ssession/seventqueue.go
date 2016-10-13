@@ -47,3 +47,11 @@ func (self *SEventQueue) PopEvent() *SEvent {
 	self.eventList = self.eventList[1:] //切片
 	return event
 }
+
+//创建事件队列
+func NewSEventQueue() *SEventQueue {
+	return &SEventQueue{
+		eventList:        make([]*SEvent, 0),
+		registedHandlers: make(map[int16]func(interface{})),
+	}
+}
