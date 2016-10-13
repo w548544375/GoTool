@@ -1,6 +1,7 @@
 package ssession
 
 import (
+	"errors"
 	"io"
 	"net"
 	"sbuffer"
@@ -11,20 +12,19 @@ const (
 	DEFAULT_HEAD_LENGTH = 18
 )
 
-var LENGTHERROR = error.Error("Packet Length mismatch")
-var ERR_LENGTH_EXTRA = error.Error("Extra Packet Length mismatch")
-var ERR_LENGTH_MAIN = error.Error("Main Packet Length mismatch")
+var LENGTHERROR = errors.New("Packet Length mismatch")
+var ERR_LENGTH_EXTRA = errors.New("Extra Packet Length mismatch")
+var ERR_LENGTH_MAIN = errors.New("Main Packet Length mismatch")
 
 type SSocket struct {
 	conn net.Conn
 }
 
-func (self *SSocket) Close()  {
+func (self *SSocket) Close() {
 	self.conn.Close()
 }
 
-
-func (socket *SSocket) Recv(buff []byte) (int,error) {
+func (socket *SSocket) Recv(buff []byte) (int, error) {
 	length := 0
 	for {
 		n, err := socket.conn.Read(buff[length:])
@@ -33,16 +33,16 @@ func (socket *SSocket) Recv(buff []byte) (int,error) {
 		}
 		if err != nil {
 			if err != io.EOF {
-				return 0,err
+				return 0, err
 			}
 			break
 		}
 	}
-	return length,nil
+	return length, nil
 }
 
 //接受数据 组装为message
-func (socket *SSocket) RecvMessage() (*smessage.SMessage,error) {
+func (socket *SSocket) RecvMessage() (*smessage.SMessage, error) {
 	msg := new(smessage.SMessage)
 	buff := make([]byte, DEFAULT_HEAD_LENGTH)
 	socket.Recv(buff)
@@ -52,47 +52,47 @@ func (socket *SSocket) RecvMessage() (*smessage.SMessage,error) {
 	extraLength := headBuf.GetShortFrom(2)
 	mainLength := headBuf.GetIntFrom(4)
 	validate := headBuf.GetShortFrom(16)
-	if msgType ^ extraLength ^ mainLength != validate {
-		return nil,LENGTHERROR
+	if int(msgType)^int(extraLength)^int(mainLength) != int(validate) {
+		return nil, LENGTHERROR
 	}
 	msg.SetHead(DEFAULT_HEAD_LENGTH, headBuf)
 	if extraLength != 0 {
 		buff = make([]byte, extraLength)
-		n,err := socket.Recv(buff)
+		n, err := socket.Recv(buff)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
-		if n == extraLength {
+		if n == int(extraLength) {
 			msg.SetExtra(extraLength, SBuffer.Wrap(buff))
-		}else{
-			return nil,ERR_LENGTH_EXTRA
+		} else {
+			return nil, ERR_LENGTH_EXTRA
 		}
 	}
 	if mainLength != 0 {
 		buff = make([]byte, mainLength)
-		n,err := socket.Recv(buff)
+		n, err := socket.Recv(buff)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
-		if n == mainLength {
-			msg.SetMain(mainLength, SBuffer.Wrap(buff))
-		}else{
-			return nil,ERR_LENGTH_MAIN
+		if n == int(mainLength) {
+			msg.SetMain(int(mainLength), SBuffer.Wrap(buff))
+		} else {
+			return nil, ERR_LENGTH_MAIN
 		}
 	}
-	return msg
+	return msg, nil
 }
 
 //发送封包
-func (socket *SSocket) SendMessage(message *smessage.SMessage) bool{
+func (socket *SSocket) SendMessage(message *smessage.SMessage) bool {
 	bSuccess := true
-	bSuccess = socket.SendBuffer(message.HeadLength(), message.Head())
-	bSuccess = socket.SendBuffer(message.ExtraLength(), message.Extra())
-	bSuccess = socket.SendBuffer(message.MainLength(), message.Main())
+	bSuccess = socket.SendBuffer(int(message.HeadLength()), message.Head())
+	bSuccess = socket.SendBuffer(int(message.ExtraLength()), message.Extra())
+	bSuccess = socket.SendBuffer(int(message.MainLength()), message.Main())
 	return bSuccess
 }
 
-func (socket *SSocket) SendBuffer(sLen int, buffer SBuffer.SBuffer) bool {
+func (socket *SSocket) SendBuffer(sLen int, buffer *SBuffer.SBuffer) bool {
 	if buffer.Limit() > 0 {
 		length := 0
 		for {
@@ -114,5 +114,5 @@ func (socket *SSocket) SendBuffer(sLen int, buffer SBuffer.SBuffer) bool {
 }
 
 func newSsocket(client net.Conn) *SSocket {
-	return &SSocket{conn:client}
+	return &SSocket{conn: client}
 }

@@ -7,9 +7,9 @@ import (
 
 type MessageList struct {
 	//
-	list     []*SSession
+	list []*smessage.SMessage
 
-	guard    sync.Mutex
+	guard sync.Mutex
 
 	listCond *sync.Cond
 }

@@ -4,6 +4,18 @@ import (
 	"sbuffer"
 )
 
+type IMessage interface {
+	HeadLength() int16
+	ExtraLength() int16
+	MainLength() int
+	Head() *SBuffer.SBuffer
+	Extra() *SBuffer.SBuffer
+	Main() *SBuffer.SBuffer
+	SetHead(length int16, head *SBuffer.SBuffer)
+	SetExtra(length int16, extra *SBuffer.SBuffer)
+	SetMain(length int, main *SBuffer.SBuffer)
+}
+
 //用于发送的消息结构体
 type SMessage struct {
 	headData    *SBuffer.SBuffer
@@ -27,18 +39,18 @@ func (msg *SMessage) MainLength() int {
 }
 
 //取得buff的head
-func (msg *SMessage) Head() []byte {
-	return msg.headData.Bytes()
+func (msg *SMessage) Head() *SBuffer.SBuffer {
+	return msg.headData
 }
 
 //ID 或者人物坐标数据
-func (msg *SMessage) Extra() []byte {
-	return msg.extraData.Bytes()
+func (msg *SMessage) Extra() *SBuffer.SBuffer {
+	return msg.extraData
 }
 
 //主要消息
-func (msg *SMessage) Main() []byte {
-	return msg.mainData.Bytes()
+func (msg *SMessage) Main() *SBuffer.SBuffer {
+	return msg.mainData
 }
 
 func (msg *SMessage) SetHead(length int16, head *SBuffer.SBuffer) {

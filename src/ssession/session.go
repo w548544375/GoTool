@@ -7,26 +7,30 @@ import (
 
 type ISession interface {
 	//发送封包
-	Send(interface{})
+	Send(*smessage.SMessage)
 	//获取session的id
-	UuID()
+	UuID() int32
 	//关闭socket
 	Close()
 }
 
 type SSession struct {
-			     //session ID
-	uuID            int
-			     //关联的socket
-	client          SSocket
-			     //发送列表
-	messages        *MessageList
-			     //close回掉函数
-	OnClose         func()
+	//session ID
+	uuID int32
+	//关联的socket
+	client SSocket
+	//发送列表
+	messages *MessageList
+	//close回掉函数
+	OnClose func()
 
-	endSync         sync.WaitGroup
+	endSync sync.WaitGroup
 
 	needNotifyWrite bool // 是否需要通知写线程关闭
+}
+
+func (self *SSession) Close() {
+	self.client.Close()
 }
 
 func (self *SSession) Send(message *smessage.SMessage) {
@@ -35,7 +39,7 @@ func (self *SSession) Send(message *smessage.SMessage) {
 	}
 }
 
-func (self *SSession) UuID() {
+func (self *SSession) UuID() int32 {
 	return self.uuID
 }
 
@@ -75,7 +79,7 @@ func NewSession(socket SSocket, evq SEventQueue) *SSession {
 	self := &SSession{
 		client:          socket,
 		needNotifyWrite: true,
-		messages:NewMessageList(),
+		messages:        NewMessageList(),
 	}
 	// 布置接收和发送2个任务
 	self.endSync.Add(2)
