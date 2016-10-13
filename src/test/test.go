@@ -48,10 +48,12 @@ func (self *EventQueue) RegisterEventHandler(name string, handler func(*int64)) 
 func (self *EventQueue) RunEvent() {
 	self.staus.Lock()
 	defer self.staus.Unlock()
-	event := self.eventList[0]
-	self.eventList = self.eventList[1:]
-	if fn, ok := self.registedFunc[event]; ok {
-		fn(&self.counter)
+	if 0 < len(self.eventList) {
+		event := self.eventList[0]
+		self.eventList = self.eventList[1:]
+		if fn, ok := self.registedFunc[event]; ok {
+			go fn(&self.counter)
+		}
 	}
 }
 
@@ -78,27 +80,33 @@ func main() {
 	go func() {
 		for {
 			queue.AddEvent("test")
-			time.Sleep(time.Millisecond * 10)
+			//time.Sleep(time.Millisecond * 10)
 		}
 	}()
+	for i := 0; i < 100; i++ {
+		go func() {
+			for brun {
+				queue.RunEvent()
+				handleCount++
+				//time.Sleep(time.Millisecond * 10)
+			}
+		}()
+	}
 	go func() {
-		for brun {
-			queue.RunEvent()
-			handleCount++
-			time.Sleep(time.Millisecond * 10)
-		}
-	}()
-
-	go func() {
-		time.Sleep(3000 * time.Millisecond)
+		time.Sleep(10000 * time.Millisecond)
 		brun = false
 		wait.Done()
 	}()
-	wait.Wait()
+	// wait.Wait()
 	fmt.Printf("Handled Event:%d\n", handleCount)
 }
 
 func Test(times *int64) {
-	fmt.Printf("This is the InnerCall %d\n", *times)
+	//fmt.Printf("This is the InnerCall %d\n", *times)
+	var temp int64 = *times
+	for temp > 0 {
+		temp--
+	}
+
 	*times++
 }

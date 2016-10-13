@@ -47,7 +47,7 @@ func (socket *SSocket) RecvMessage() (*smessage.SMessage, error) {
 	buff := make([]byte, DEFAULT_HEAD_LENGTH)
 	socket.Recv(buff)
 	//验证数据包
-	headBuf := SBuffer.Wrap(buff)
+	headBuf := sbuffer.Wrap(buff)
 	msgType := headBuf.GetShortFrom(0)
 	extraLength := headBuf.GetShortFrom(2)
 	mainLength := headBuf.GetIntFrom(4)
@@ -63,7 +63,7 @@ func (socket *SSocket) RecvMessage() (*smessage.SMessage, error) {
 			return nil, err
 		}
 		if n == int(extraLength) {
-			msg.SetExtra(extraLength, SBuffer.Wrap(buff))
+			msg.SetExtra(extraLength, sbuffer.Wrap(buff))
 		} else {
 			return nil, ERR_LENGTH_EXTRA
 		}
@@ -75,7 +75,7 @@ func (socket *SSocket) RecvMessage() (*smessage.SMessage, error) {
 			return nil, err
 		}
 		if n == int(mainLength) {
-			msg.SetMain(int(mainLength), SBuffer.Wrap(buff))
+			msg.SetMain(int(mainLength), sbuffer.Wrap(buff))
 		} else {
 			return nil, ERR_LENGTH_MAIN
 		}
@@ -92,7 +92,7 @@ func (socket *SSocket) SendMessage(message *smessage.SMessage) bool {
 	return bSuccess
 }
 
-func (socket *SSocket) SendBuffer(sLen int, buffer *SBuffer.SBuffer) bool {
+func (socket *SSocket) SendBuffer(sLen int, buffer *sbuffer.SBuffer) bool {
 	if buffer.Limit() > 0 {
 		length := 0
 		for {

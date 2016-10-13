@@ -1,4 +1,4 @@
-package SBuffer
+package sbuffer
 
 import (
 	"errors"

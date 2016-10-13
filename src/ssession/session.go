@@ -64,7 +64,7 @@ func (self *SSession) recvThread(evq SEventQueue) {
 		if err != nil {
 			willExit = true
 		}
-		evq.PostMessage(msg, self)
+		evq.PushEvent(NewSEvent(self, msg.Main().GetShortFrom(0), msg))
 	}
 
 	if self.needNotifyWrite {
