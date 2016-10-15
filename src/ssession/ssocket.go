@@ -12,7 +12,7 @@ const (
 	DEFAULT_HEAD_LENGTH = 18
 )
 
-var LENGTHERROR = errors.New("Packet Length mismatch")
+var LENGHT_ERROR = errors.New("Packet Length mismatch")
 var ERR_LENGTH_EXTRA = errors.New("Extra Packet Length mismatch")
 var ERR_LENGTH_MAIN = errors.New("Main Packet Length mismatch")
 
@@ -53,7 +53,7 @@ func (socket *SSocket) RecvMessage() (*smessage.SMessage, error) {
 	mainLength := headBuf.GetIntFrom(4)
 	validate := headBuf.GetShortFrom(16)
 	if int(msgType)^int(extraLength)^int(mainLength) != int(validate) {
-		return nil, LENGTHERROR
+		return nil, LENGHT_ERROR
 	}
 	msg.SetHead(DEFAULT_HEAD_LENGTH, headBuf)
 	if extraLength != 0 {
@@ -113,6 +113,6 @@ func (socket *SSocket) SendBuffer(sLen int, buffer *sbuffer.SBuffer) bool {
 	return false
 }
 
-func newSsocket(client net.Conn) *SSocket {
+func NewSocket(client net.Conn) *SSocket {
 	return &SSocket{conn: client}
 }

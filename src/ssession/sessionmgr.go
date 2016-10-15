@@ -6,8 +6,8 @@ import (
 )
 
 type ISessionMgr interface {
-	Add(ISession)
-	Remove(ISession)
+	Add(*ISession)
+	Remove(*ISession)
 }
 
 type SessionMgr struct {
@@ -23,7 +23,7 @@ type SessionMgr struct {
 
 const totalTryCount = 100
 
-func (self *SessionMgr) Add(client ISession) {
+func (self *SessionMgr) Add(client *SSession) {
 	self.guard.Lock()
 	defer self.guard.Unlock()
 
@@ -32,20 +32,26 @@ func (self *SessionMgr) Add(client ISession) {
 	for i := 0; i < tryCount; i++ {
 		id = atomic.AddInt32(&self.idAcs, 1)
 		if _, ok := self.managedSes[id]; !ok {
-			sSession := client.(*SSession)
-			sSession.uuID = id
-			self.managedSes[id] = sSession
+			client.uuID = id
+			self.managedSes[id] = client
 			break
 		}
 	}
 }
 
 //移除连接
-func (self *SessionMgr) Remove(client ISession) {
+func (self *SessionMgr) Remove(client *SSession) {
 	self.guard.Lock()
 	defer self.guard.Unlock()
 
 	if client != nil {
 		delete(self.managedSes, client.UuID())
+	}
+}
+
+func NewSessionMgr() *SessionMgr {
+	return &SessionMgr{
+		managedSes: make(map[int32]*SSession),
+		idAcs:      0,
 	}
 }

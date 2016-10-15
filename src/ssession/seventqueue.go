@@ -4,6 +4,7 @@ package ssession
  *  事件队列，存储事件
  */
 import (
+	"fmt"
 	"sync"
 )
 
@@ -31,6 +32,7 @@ func (self *SEventQueue) RegisterEventHandler(eventID int16, handler func(interf
 
 //写入事件
 func (self *SEventQueue) PushEvent(event *SEvent) {
+	fmt.Printf("事件到达:%v\n", event)
 	self.guard.Lock()
 	defer self.guard.Unlock()
 	self.eventList = append(self.eventList, event)

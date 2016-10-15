@@ -41,7 +41,9 @@ func (self *MessageList) Reset() {
 }
 
 func NewMessageList() *MessageList {
-	self := &MessageList{}
+	self := &MessageList{
+		list: make([]*smessage.SMessage, 0),
+	}
 	self.listCond = sync.NewCond(&self.guard)
 	return self
 }

@@ -18,7 +18,7 @@ type SSession struct {
 	//session ID
 	uuID int32
 	//关联的socket
-	client SSocket
+	client *SSocket
 	//发送列表
 	messages *MessageList
 	//close回掉函数
@@ -57,7 +57,7 @@ func (self *SSession) sendTread() {
 	self.client.Close()
 }
 
-func (self *SSession) recvThread(evq SEventQueue) {
+func (self *SSession) recvThread(evq *SEventQueue) {
 	willExit := false
 	for !willExit {
 		msg, err := self.client.RecvMessage()
@@ -75,7 +75,7 @@ func (self *SSession) recvThread(evq SEventQueue) {
 }
 
 //新建session
-func NewSession(socket SSocket, evq SEventQueue) *SSession {
+func NewSession(socket *SSocket, evq *SEventQueue) *SSession {
 	self := &SSession{
 		client:          socket,
 		needNotifyWrite: true,
