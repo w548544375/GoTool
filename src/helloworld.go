@@ -1,6 +1,11 @@
 package main
 
 import (
+
+)
+import (
+	"net"
+	"ssession"
 	"fmt"
 )
 
@@ -21,19 +26,32 @@ func main() {
 	// fmt.Printf("%v\n", test)
 	// test1 := Test()
 	// fmt.Printf("%v", test1)
-	Test(1, 2, 3, 4)
-	a := make([]int, 0)
-	fmt.Printf("%v", a)
-	a = append(a, 1)
-	fmt.Printf("%v %d", a, len(a))
-
-}
-
-func Test(a ...int) {
-	for i := range a {
-		fmt.Printf("%d", i)
+	ls,err := net.Listen("tcp",":2287")
+	if err != nil{
+		panic(err)
 	}
-	// for j := range c {
-	// 	fmt.Printf("%s", j)
-	// }
+	for  {
+	   sock,err := ls.Accept()
+		if err != nil {
+			panic(err)
+		}
+	   go func() {
+		   sock.Write(ssession.Meet)
+		   buff := make([]byte,1024)
+		   n,err := sock.Read(buff)
+		   if(err != nil){
+			   panic(err)
+		   }
+		   for n >0 {
+			   fmt.Printf("%v\n",buff)
+			   n,err = sock.Read(buff[0:])
+			   if err != nil{
+				   panic(err)
+			   }
+		   }
+	   }()
+	}
+
 }
+
+

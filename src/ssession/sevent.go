@@ -2,10 +2,12 @@ package ssession
 
 import (
 	"smessage"
+	"fmt"
 )
 
 type IEvent interface {
 	EventID() int16
+	Shooter() *SSession
 }
 
 type SEvent struct {
@@ -14,9 +16,17 @@ type SEvent struct {
 	message *smessage.SMessage
 }
 
+func (self *SEvent) String() string{
+	return fmt.Sprintf("{evId:%d,shooterID:%d,message:%v}\n",self.evId,self.Shooter().UuID(),self.message)
+}
+
 //获取事件ID
 func (self *SEvent) EventID() int16 {
 	return self.evId
+}
+
+func (self *SEvent) Shooter() *SSession {
+	return self.shooter
 }
 
 /*定义Sevent的方法*/

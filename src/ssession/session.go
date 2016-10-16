@@ -3,6 +3,7 @@ package ssession
 import (
 	"smessage"
 	"sync"
+	"fmt"
 )
 
 type ISession interface {
@@ -39,6 +40,9 @@ func (self *SSession) Send(message *smessage.SMessage) {
 	}
 }
 
+
+
+
 func (self *SSession) UuID() int32 {
 	return self.uuID
 }
@@ -48,9 +52,11 @@ func (self *SSession) sendTread() {
 	for !willExit {
 		msg := self.messages.Pick()
 		if msg != nil {
-			willExit = self.client.SendMessage(msg)
+			fmt.Printf("发送消息\n:%v\n",msg)
+			willExit = !self.client.SendMessage(msg)
 		}
 	}
+	fmt.Println("线程执行结束")
 	self.needNotifyWrite = false
 	// 通知发送线程ok
 	self.endSync.Done()
@@ -60,14 +66,23 @@ func (self *SSession) sendTread() {
 func (self *SSession) recvThread(evq *SEventQueue) {
 	willExit := false
 	for !willExit {
-		msg, err := self.client.RecvMessage()
+		buff := make([]byte,256)
+		msg, err := self.client.Recv(buff)
 		if err != nil {
+			fmt.Printf("客户端断开连接：%v\n",self)
 			willExit = true
 		}
-		evq.PushEvent(NewSEvent(self, msg.Main().GetShortFrom(0), msg))
+		if msg == -1{
+			fmt.Print("收到EOF\n")
+		}else {
+			fmt.Printf("收到的消息为：%v\n", msg)
+			evq.PushEvent(NewSEvent(self, msg.Main().GetShortFrom(0), msg))
+		}
+
 	}
 
 	if self.needNotifyWrite {
+		fmt.Printf("退出接受线程：%v",self.needNotifyWrite)
 		self.client.Close()
 	}
 	// 通知发送线程ok

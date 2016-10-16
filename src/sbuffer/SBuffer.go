@@ -65,6 +65,9 @@ func (buff *SBuffer) Pos() int {
 
 //取得到limit的buff内容
 func (buff *SBuffer) Bytes() []byte {
+	if nil == buff{
+		return nil
+	}
 	return buff.buf[:buff.limit]
 }
 

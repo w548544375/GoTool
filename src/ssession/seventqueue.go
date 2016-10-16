@@ -50,6 +50,12 @@ func (self *SEventQueue) PopEvent() *SEvent {
 	return event
 }
 
+func (self *SEventQueue) RunEvent(event *SEvent){
+	if fn,ok := self.registedHandlers[event.evId];ok{
+		fn(event)
+	}
+}
+
 //创建事件队列
 func NewSEventQueue() *SEventQueue {
 	return &SEventQueue{

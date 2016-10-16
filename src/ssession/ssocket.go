@@ -2,10 +2,10 @@ package ssession
 
 import (
 	"errors"
-	"io"
 	"net"
 	"sbuffer"
 	"smessage"
+	"fmt"
 )
 
 const (
@@ -27,15 +27,13 @@ func (self *SSocket) Close() {
 func (socket *SSocket) Recv(buff []byte) (int, error) {
 	length := 0
 	for {
-		n, err := socket.conn.Read(buff[length:])
+		n, err := socket.conn.Read(buff)
+		fmt.Printf("n:%d\n",n)
 		if n > 0 {
 			length += n
 		}
 		if err != nil {
-			if err != io.EOF {
-				return 0, err
-			}
-			break
+			return -1,err
 		}
 	}
 	return length, nil
@@ -93,6 +91,9 @@ func (socket *SSocket) SendMessage(message *smessage.SMessage) bool {
 }
 
 func (socket *SSocket) SendBuffer(sLen int, buffer *sbuffer.SBuffer) bool {
+	if sLen == 0 {
+		return true
+	}
 	if buffer.Limit() > 0 {
 		length := 0
 		for {
@@ -102,6 +103,7 @@ func (socket *SSocket) SendBuffer(sLen int, buffer *sbuffer.SBuffer) bool {
 			}
 			if err != nil {
 				//如果写出数据错误返回false
+				fmt.Printf("错误:%v\n",err)
 				break
 			}
 			if length == sLen {

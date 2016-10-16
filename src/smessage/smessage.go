@@ -2,6 +2,7 @@ package smessage
 
 import (
 	"sbuffer"
+	"fmt"
 )
 
 type IMessage interface {
@@ -25,6 +26,12 @@ type SMessage struct {
 	mainData    *sbuffer.SBuffer
 	mainLength  int
 }
+
+func (self *SMessage) String() string {
+	return fmt.Sprintf("head:%d\nData:%v\nExtra:%d\nData:%v\nMain:%d\nData:%v\n",
+	self.headLength,self.headData.Bytes(),self.extraLength,self.extraData.Bytes(),self.mainLength,self.mainData.Bytes())
+}
+
 
 func (msg *SMessage) HeadLength() int16 {
 	return msg.headLength
@@ -72,4 +79,14 @@ func (msg *SMessage) SetMain(length int, main *sbuffer.SBuffer) {
 		msg.mainData = main
 		msg.mainLength = length
 	}
+}
+
+func NewSMessage(headlen,extralen int16,mainlen int,head,extra,main *sbuffer.SBuffer) *SMessage {
+	return &SMessage{headData:head,
+			 headLength:headlen,
+			 extraData:extra,
+			extraLength:extralen,
+			mainData:main,
+			mainLength:mainlen,
+				}
 }
